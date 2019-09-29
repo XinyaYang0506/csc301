@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Main {
     // this function traverse the tree and find number of nodes reachable at exactly k distance.
+    // We maintain a temp linkedlist to keep track of the "parent-child" relationship so that we can find the correct parent to increment.
     public static void findkthDistance(int [] kthDistance, LinkedList<Integer> temp,int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles, int k) {
         temp.add(curNode);
         if (temp.size() >= k + 1) {
@@ -22,6 +23,7 @@ public class Main {
     }
 
     // this function traverse the tree and record number of nodes at each depth level
+    // we keep a depth counter to keep track of the depth we are in at the current node
     public static void findStructure(ArrayList<Integer> chain, int curNode, int depth, LinkedList<Integer>[] isPointedBy, boolean[] cycles) {
         int chainSize = chain.size();
         if (chainSize <= depth) {
@@ -40,6 +42,7 @@ public class Main {
     }
 
     // this function calculate the number of nodes  in the tree reachable with in k distance.
+    // Recursively, we add up the the result of the children of the root node, and then minus the number of "grand" children at exactly k+1 distance
     public static void calculateKInChain (int[] ret, int[] kthDistance, int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles) {
         ret[curNode] += 1;
         if (isPointedBy[curNode] == null){
