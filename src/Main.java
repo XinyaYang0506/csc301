@@ -135,19 +135,19 @@ public class Main {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        File file = new File("/Users/xinya/Downloads/icpc2019data/H-hobsonstrains/secret-45.in");
-        Scanner sc = new Scanner(file);
+        Scanner sc = new Scanner(System.in);
         String [] firstLine = sc.nextLine().split(" ");
         int n = Integer.parseInt(firstLine[0]);
         int k = Integer.parseInt(firstLine[1]);
         int [] stations = new int [n];
-        System.out.println("Input: ");
+	//        System.out.println("Input: ");
         for (int i = 0; i < n; i++) {
             stations[i] = Integer.parseInt(sc.nextLine()) - 1;
-            System.out.println(stations[i] + 1);
+	    //    System.out.println(stations[i] + 1);
         }
-        System.out.println("Output: ");
+	sc.close();
+        //System.out.println("Output: ");
         Solution(stations, k);
-
     }
+    
 }
