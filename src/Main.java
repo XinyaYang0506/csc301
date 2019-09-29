@@ -3,14 +3,12 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
-    public static void findkthDistance(List<Integer> [] kthDistance, LinkedList<Integer> temp,int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles, int k) {
+    // this function traverse the tree and find number of nodes reachable at exactly k distance.
+    public static void findkthDistance(int [] kthDistance, LinkedList<Integer> temp,int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles, int k) {
         temp.add(curNode);
         if (temp.size() >= k + 1) {
             int ancestor = temp.get(temp.size() - k - 1);
-            if (kthDistance[ancestor] == null) {
-                kthDistance[ancestor] = new LinkedList<>();
-            }
-            kthDistance[ancestor].add(curNode);
+            kthDistance[ancestor]++;
         }
         if (isPointedBy[curNode] != null) {
             for (Integer node : isPointedBy[curNode]) {
@@ -23,7 +21,8 @@ public class Main {
         temp.removeLast();
     }
 
-    public static void findStructure(ArrayList<Integer> chain, int curNode, int depth, int[][] numStationsInDistance, LinkedList<Integer>[] isPointedBy, boolean[] cycles, int k) {
+    // this function traverse the tree and record number of nodes at each depth level
+    public static void findStructure(ArrayList<Integer> chain, int curNode, int depth, LinkedList<Integer>[] isPointedBy, boolean[] cycles) {
         int chainSize = chain.size();
         if (chainSize <= depth) {
             chain.add(0);
@@ -32,17 +31,16 @@ public class Main {
         if (isPointedBy[curNode] != null) {
             for (Integer node : isPointedBy[curNode]) {
                 if (!cycles[node]) {
-                    findStructure(chain, node, depth + 1, numStationsInDistance, isPointedBy, cycles, k);
+                    findStructure(chain, node, depth + 1, isPointedBy, cycles);
                 }
 
             }
 
         }
-
-
     }
 
-    public static void calculateKInChain (int[] ret, List<Integer>[] kthDistance, int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles, int k) {
+    // this function calculate the number of nodes  in the tree reachable with in k distance.
+    public static void calculateKInChain (int[] ret, int[] kthDistance, int curNode, LinkedList<Integer>[] isPointedBy, boolean[] cycles) {
         ret[curNode] += 1;
         if (isPointedBy[curNode] == null){
             return;
@@ -50,37 +48,34 @@ public class Main {
         else {
             for (Integer node : isPointedBy[curNode]) {
                 if (!cycles[node]) {
-                    calculateKInChain(ret, kthDistance, node, isPointedBy, cycles, k);
+                    calculateKInChain(ret, kthDistance, node, isPointedBy, cycles);
                     ret[curNode] += ret[node];
-                    ret[curNode] -= kthDistance[node] == null ? 0 : kthDistance[node].size();
+                    ret[curNode] -= kthDistance[node];
                 }
             }
 
 
         }
-
-
-
-
     }
 
 
     public static void Solution (int[] stations, int k) {
         int l = stations.length;
         boolean[] checked = new boolean [l];
-        LinkedList<Integer>[] isPointedBy = new LinkedList[l];
-        boolean[] cycles = new boolean[l];
+        LinkedList<Integer>[] nodesPointTo = new LinkedList[l];
+        boolean[] inCycle = new boolean[l];
 
+        //find the nodes on the cycle and record each node is pointed to by what.
         for (int i = 0; i < l; i++) {
             int startSt = i;
             boolean [] visited = new boolean [l];
             boolean foundCycle = false;
                 while (!checked[startSt]) {
                     int cur = stations[startSt];
-                    if (isPointedBy[cur] == null) {
-                        isPointedBy[cur] = new LinkedList<Integer>();
+                    if (nodesPointTo[cur] == null) {
+                        nodesPointTo[cur] = new LinkedList<Integer>();
                     }
-                    isPointedBy[cur].add(startSt);
+                    nodesPointTo[cur].add(startSt);
                     visited[startSt] = true;
                     checked[startSt] = true;
                     startSt = cur;
@@ -88,31 +83,31 @@ public class Main {
                 if (visited[startSt]) {
                     //now we reach a entry of a cycle
                     int stop = startSt;
-                    while (!cycles[startSt]){
-                        cycles[startSt] =true;
+                    while (!inCycle[startSt]){
+                        inCycle[startSt] =true;
                         startSt = stations[startSt];
                     }
                 }
         }
-        int [][] numStationsInDistance = new int[l][k + 1];
+
         ArrayList<Integer>[] structuresOfChains = new ArrayList[l];
-        List<Integer> [] kthDistance = new List[l];
+        int [] kthDistance = new int[l];
         int [] ret = new int[l];
         //now compute each tail
         for (int i= 0; i < l; i++) {
-            if (cycles[i]) {
+            if (inCycle[i]) {
                 structuresOfChains[i] = new ArrayList<Integer>();
-                findStructure(structuresOfChains[i], i, 0, numStationsInDistance, isPointedBy, cycles, k);
+                findStructure(structuresOfChains[i], i, 0, nodesPointTo, inCycle);
                 LinkedList<Integer> temp = new LinkedList<>();
-                findkthDistance(kthDistance, temp, i, isPointedBy, cycles, k);
-                calculateKInChain(ret, kthDistance, i, isPointedBy, cycles, k);
+                findkthDistance(kthDistance, temp, i, nodesPointTo, inCycle, k);
+                calculateKInChain(ret, kthDistance, i, nodesPointTo, inCycle);
             }
         }
 
+        //now we consider the  inCycle
         int [] nodesFromCycle = new int[l];
-        //now we consider the  cycles
         for (int i= 0; i < l; i++) {
-            if (cycles[i]) {
+            if (inCycle[i]) {
                 int counter = 1;
                 int targetNode = stations[i];
                 int usable = ret[i];
@@ -127,6 +122,7 @@ public class Main {
             }
         }
 
+        //combine the result
         for (int i = 0; i < l; i++) {
             ret[i] += nodesFromCycle[i];
             System.out.println(ret[i]);
@@ -135,6 +131,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
+//        File file = new File("/Users/xinya/Downloads/icpc2019data/H-hobsonstrains/secret-11.in");
+//        Scanner sc = new Scanner(file);
         Scanner sc = new Scanner(System.in);
         String [] firstLine = sc.nextLine().split(" ");
         int n = Integer.parseInt(firstLine[0]);
