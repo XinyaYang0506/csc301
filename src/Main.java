@@ -56,12 +56,10 @@ public class Main {
                     ret[curNode] -= kthDistance[node];
                 }
             }
-
-
         }
     }
 
-
+    // This function is computes and prints the solution, given the inputs specified in the problem description.
     public static void Solution (int[] stations, int k) {
         int l = stations.length;
         boolean[] checked = new boolean [l];
@@ -107,7 +105,7 @@ public class Main {
             }
         }
 
-        //now we consider the  inCycle
+        //now we calculate the number of reachable nodes through the cycle
         int [] nodesFromCycle = new int[l];
         for (int i= 0; i < l; i++) {
             if (inCycle[i]) {
