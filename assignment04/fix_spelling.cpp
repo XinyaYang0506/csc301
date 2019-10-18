@@ -36,9 +36,10 @@ int edit_distance (std::string & w1, std::string & w2) {
     return edit_table[len1][len2]; 
 }
 
-
+//This function check every word in the string str and correct each word if it is not in the dict
 void fix_spelling_str (std::string str, unordered_set<std::string>& dict) {
-    //tokenize the string str into vector word
+    //tokenize the Your string input: minimun
+
     std::size_t current, previous = 0;
     std::vector<string> words;
 
