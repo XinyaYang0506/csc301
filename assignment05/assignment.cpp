@@ -74,18 +74,18 @@ void clockwise_rotate(shared_ptr<tree_node> large_node) {
     //change how grandparents are connected
     little_node->parent = large_node->parent; 
     if (little_node->parent == nullptr) {
-        root = large_node; 
+        root = little_node; 
     } else {
-        if (little_node == (little_node->parent->left_child)) {
-            little_node ->parent->left_child = large_node; 
+        if (large_node == (large_node->parent->left_child)) {
+            large_node ->parent->left_child = little_node; 
         } else {
-            little_node ->parent->right_child = large_node; 
+            large_node ->parent->right_child = little_node; 
         }
     }
 
-    //put little_node as large_node's left child
-    large_node->left_child = little_node; 
-    little_node->parent = large_node; 
+    //put large_node as little_node's right child
+    little_node->left_child = large_node; 
+    large_node->parent = little_node; 
 
     return;
 }
