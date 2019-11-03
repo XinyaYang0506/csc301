@@ -34,6 +34,11 @@ public:
         : value(val), is_red(true), left_child(nullptr), right_child(nullptr), parent(parent_ptr){}
 };
 
+ostream& operator<<(ostream& os, tree_node const & tn) {
+  os << "(" << tn.value <<  ", " << (tn.is_red ? "red)" : "black)");
+  return os;
+}
+
 class redblack_tree {
 private: 
 void restore(shared_ptr<tree_node> node); 
@@ -108,10 +113,41 @@ redblack_tree::redblack_tree(vector<uint8_t> values) {
     }
 }
 
+void redblack_tree::print_tree() {
+  if(root == nullptr) {
+    return;
+  }
+
+  cout << root << endl;
+
+  vector<shared_ptr<tree_node> > parents;
+  parents.push_back(root);
+
+  vector<shared_ptr<tree_node> > new_parents;
+  
+  while(parents.size() > 0) {
+    for(auto parent : parents) {
+      if(parent == nullptr) {
+	continue;
+      }
+      if(parent->left_child != nullptr) {
+	new_parents.push_back(parent->left_child);
+	cout << parent->left_child << " ";
+      }
+      if(parent->right_child != nullptr) {
+	new_parents.push_back(parent->right_child);
+	cout << parent->right_child << " ";
+      }      
+    }
+    parents = new_parents;
+    new_parents.clear();
+  }
+}
+
 bool redblack_tree::insert_node(uint8_t value) {
     if (root == nullptr) {
         root = make_shared<tree_node>(tree_node(value, nullptr)); 
-        return; 
+        return true; 
     } else {
         shared_ptr<tree_node> cur_node = root; 
         // uint8_t cur_value = root->value; 
