@@ -40,7 +40,24 @@ ostream& operator<<(ostream& os, tree_node const & tn) {
 }
 
 class redblack_tree {
-private: 
+private:
+shared_ptr<tree_node> get_node(uint8_t value) {
+  if(root == nullptr) {
+    return nullptr;
+  }
+  auto cur_node = root;
+  while(cur_node != nullptr) {
+    if(cur_node->value == value) {
+      return cur_node;
+    } else if(cur_node->value < value) {
+      cur_node = cur_node->right_child;
+    } else {
+      cur_node = cur_node->left_child;
+    }
+  }
+  return nullptr;
+}
+  
 void restore(shared_ptr<tree_node> node); 
 void counter_clockwise_rotate(shared_ptr<tree_node> little_node) {
     shared_ptr<tree_node> large_node = little_node->right_child; 
@@ -179,3 +196,27 @@ bool redblack_tree::insert_node(uint8_t value) {
     }
 }
 
+int redblack_tree::black_height(uint8_t value) {
+  if(root == nullptr) {
+    return -1;
+  } else {
+    auto node = get_node(value);
+    int count = -1;
+    while(node->left_child != nullptr && node->right_child != nullptr) {
+      if(!node->is_red) {
+	count++;
+      }
+      if(node->left_child != nullptr) {
+	node = node->left_child;
+      } else {
+	node = node->right_child;
+      }
+    }
+    return count;
+  }
+}
+
+
+int main() {
+  return 0;
+}
