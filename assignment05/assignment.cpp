@@ -34,8 +34,30 @@ public:
         : value(val), is_red(true), left_child(nullptr), right_child(nullptr), parent(parent_ptr){}
 };
 
+ostream& operator<<(ostream& os, tree_node const & tn) {
+  os << "(" << tn.value <<  ", " << (tn.is_red ? "red)" : "black)");
+  return os;
+}
+
 class redblack_tree {
-private: 
+private:
+shared_ptr<tree_node> get_node(uint8_t value) {
+  if(root == nullptr) {
+    return nullptr;
+  }
+  auto cur_node = root;
+  while(cur_node != nullptr) {
+    if(cur_node->value == value) {
+      return cur_node;
+    } else if(cur_node->value < value) {
+      cur_node = cur_node->right_child;
+    } else {
+      cur_node = cur_node->left_child;
+    }
+  }
+  return nullptr;
+}
+  
 void restore(shared_ptr<tree_node> node); 
 void counter_clockwise_rotate(shared_ptr<tree_node> little_node) {//parent_node
     shared_ptr<tree_node> large_node = little_node->right_child; 
@@ -108,11 +130,42 @@ redblack_tree::redblack_tree(vector<uint8_t> values) {
     }
 }
 
+void redblack_tree::print_tree() {
+  if(root == nullptr) {
+    return;
+  }
+
+  cout << root << endl;
+
+  vector<shared_ptr<tree_node> > parents;
+  parents.push_back(root);
+
+  vector<shared_ptr<tree_node> > new_parents;
+  
+  while(parents.size() > 0) {
+    for(auto parent : parents) {
+      if(parent == nullptr) {
+	continue;
+      }
+      if(parent->left_child != nullptr) {
+	new_parents.push_back(parent->left_child);
+	cout << parent->left_child << " ";
+      }
+      if(parent->right_child != nullptr) {
+	new_parents.push_back(parent->right_child);
+	cout << parent->right_child << " ";
+      }      
+    }
+    parents = new_parents;
+    new_parents.clear();
+  }
+}
+
 bool redblack_tree::insert_node(uint8_t value) {
     if (root == nullptr) {
         root = make_shared<tree_node>(tree_node(value, nullptr)); 
         root->is_red = false; 
-        return; 
+        return true; 
     } else {
         shared_ptr<tree_node> cur_node = root; 
         // uint8_t cur_value = root->value; 
@@ -185,3 +238,27 @@ bool redblack_tree::insert_node(uint8_t value) {
     }
 }
 
+int redblack_tree::black_height(uint8_t value) {
+  if(root == nullptr) {
+    return -1;
+  } else {
+    auto node = get_node(value);
+    int count = -1;
+    while(node->left_child != nullptr && node->right_child != nullptr) {
+      if(!node->is_red) {
+	count++;
+      }
+      if(node->left_child != nullptr) {
+	node = node->left_child;
+      } else {
+	node = node->right_child;
+      }
+    }
+    return count;
+  }
+}
+
+
+int main() {
+  return 0;
+}
