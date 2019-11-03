@@ -39,7 +39,7 @@ public:
 
 ostream &operator<<(ostream &os, tree_node const &tn)
 {
-    os << "(" << tn.value << ", " << (tn.is_red ? "red)" : "black)");
+    os << "(" << (int)tn.value << ", " << (tn.is_red ? "red)" : "black)");
     return os;
 }
 
@@ -135,7 +135,7 @@ private:
         }
 
         //put large_node as little_node's right child
-        little_node->left_child = large_node;
+        little_node->right_child = large_node;
         large_node->parent = little_node;
 
         return;
@@ -146,7 +146,7 @@ public:
     redblack_tree(vector<uint8_t> values);
     bool insert_node(uint8_t value);
     void print_tree(void);
-    void delete_node(uint8_t value);
+    void delete_node(uint8_t value){};
     int black_height(shared_ptr<tree_node> node);
     int black_height(uint8_t value);
     shared_ptr<tree_node> find(uint8_t value);
@@ -156,6 +156,7 @@ redblack_tree::redblack_tree(vector<uint8_t> values)
 {
     for (auto val : values)
     {
+        cout << "here " << (int) val << endl;
         insert_node(val);
     }
 }
@@ -167,7 +168,7 @@ void redblack_tree::print_tree()
         return;
     }
 
-    cout << root << endl;
+    cout << *root << endl;
 
     vector<shared_ptr<tree_node>> parents;
     parents.push_back(root);
@@ -185,16 +186,17 @@ void redblack_tree::print_tree()
             if (parent->left_child != nullptr)
             {
                 new_parents.push_back(parent->left_child);
-                cout << parent->left_child << " ";
+                cout << *(parent->left_child) << " ";
             }
             if (parent->right_child != nullptr)
             {
                 new_parents.push_back(parent->right_child);
-                cout << parent->right_child << " ";
+                cout << *(parent->right_child) << " ";
             }
         }
         parents = new_parents;
         new_parents.clear();
+        cout << endl; 
     }
 }
 
@@ -259,7 +261,7 @@ bool redblack_tree::insert_node(uint8_t value)
                 }
                 else
                 {
-                    if (cur_node = cur_node->parent->right_child)
+                    if (cur_node == cur_node->parent->right_child)
                     {
                         //move cur_node up
                         cur_node = cur_node->parent;
@@ -284,7 +286,7 @@ bool redblack_tree::insert_node(uint8_t value)
                 }
                 else
                 {
-                    if (cur_node = cur_node->parent->left_child)
+                    if (cur_node == cur_node->parent->left_child)
                     {
                         //move cur_node up
                         cur_node = cur_node->parent;
@@ -297,6 +299,8 @@ bool redblack_tree::insert_node(uint8_t value)
                     counter_clockwise_rotate(cur_node->parent->parent);
                 }
             }
+
+        root->is_red = false;
         }
         return true; //should not need to get here
     }
@@ -333,5 +337,40 @@ int redblack_tree::black_height(uint8_t value)
 
 int main()
 {
+    int tap_arr[] = {2, 3, 5, 0}; 
+    vector<int> tap (tap_arr, tap_arr + sizeof(tap_arr)/sizeof(int)); 
+    vector<uint8_t> initial_values; 
+    uint8_t seed = 128; 
+    for (int i = 0; i < 10; i++) {
+        initial_values.push_back(seed); 
+        seed = lsfr(seed, tap); 
+    }
+    redblack_tree rb_tree(initial_values); 
+    cout << "!!!" << endl; 
+    rb_tree.print_tree();
+    rb_tree.black_height(128);
+    while(true) {
+        cout << "Your command: "; 
+        string input; 
+        cin >> input; 
+        cout << "Your value: "; 
+        uint8_t value; 
+        cin >> value; 
+        if (input == "ADD") {
+            rb_tree.insert_node(value);
+        }
+        if (input == "DEL") {
+            rb_tree.delete_node(value);
+        }
+
+        if (input == "BLKH") {
+            rb_tree.black_height(value);
+        }
+
+        if (input == "EXIT") {
+            break; 
+        }
+    }
+
     return 0;
 }
