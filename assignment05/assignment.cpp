@@ -37,7 +37,7 @@ public:
 class redblack_tree {
 private: 
 void restore(shared_ptr<tree_node> node); 
-void counter_clockwise_rotate(shared_ptr<tree_node> little_node) {
+void counter_clockwise_rotate(shared_ptr<tree_node> little_node) {//parent_node
     shared_ptr<tree_node> large_node = little_node->right_child; 
     little_node->right_child = large_node->left_child; 
     if (large_node->left_child != nullptr) {
@@ -63,7 +63,7 @@ void counter_clockwise_rotate(shared_ptr<tree_node> little_node) {
     return;
 }
 
-void clockwise_rotate(shared_ptr<tree_node> large_node) {
+void clockwise_rotate(shared_ptr<tree_node> large_node) {//parent_node
     shared_ptr<tree_node> little_node = large_node->left_child; 
     //transfer sub-tree ownership
     large_node->left_child = little_node->right_child; 
@@ -111,6 +111,7 @@ redblack_tree::redblack_tree(vector<uint8_t> values) {
 bool redblack_tree::insert_node(uint8_t value) {
     if (root == nullptr) {
         root = make_shared<tree_node>(tree_node(value, nullptr)); 
+        root->is_red = false; 
         return; 
     } else {
         shared_ptr<tree_node> cur_node = root; 
@@ -138,8 +139,49 @@ bool redblack_tree::insert_node(uint8_t value) {
             }
         }
 
-        redblack_tree::restore(cur_node);
-        return false; //should not need to get here
+        while(cur_node != root && cur_node->parent->is_red) {
+            if (cur_node->parent == cur_node->parent->parent->left_child) { //uncle is on the right
+                shared_ptr<tree_node> uncle = cur_node->parent->parent->right_child; 
+                if (uncle != nullptr && uncle->is_red) {
+                    cur_node->parent->is_red = false; 
+                    uncle->is_red = false; 
+                    cur_node->parent->parent->is_red = true; 
+                    cur_node = cur_node->parent->parent; 
+                } else {
+                    if (cur_node = cur_node->parent->right_child) {
+                        //move cur_node up
+                        cur_node = cur_node->parent; 
+                        counter_clockwise_rotate(cur_node); 
+                    }
+
+                    //left child
+                    cur_node->parent->is_red = false; 
+                    cur_node->parent->parent->is_red = true; 
+                    clockwise_rotate(cur_node->parent->parent); 
+                }
+            } else { // uncle is on the left
+                shared_ptr<tree_node> uncle = cur_node->parent->parent->left_child; 
+                if (uncle != nullptr && uncle->is_red) {
+                    cur_node->parent->is_red = false; 
+                    uncle->is_red = false; 
+                    cur_node->parent->parent->is_red = true; 
+                    cur_node = cur_node->parent->parent; 
+                } else {
+                    if (cur_node = cur_node->parent->left_child) {
+                        //move cur_node up
+                        cur_node = cur_node->parent; 
+                        clockwise_rotate(cur_node); 
+                    }
+
+                    //right child
+                    cur_node->parent->is_red = false; 
+                    cur_node->parent->parent->is_red = true; 
+                    counter_clockwise_rotate(cur_node->parent->parent); 
+                }
+
+            }
+        }
+        return true; //should not need to get here
     }
 }
 
