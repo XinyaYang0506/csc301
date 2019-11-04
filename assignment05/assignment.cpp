@@ -158,7 +158,9 @@ bool redblack_tree::delete_node(uint8_t value) {
 	node->parent->left_child  = replacement_node;
       } else {
 	node->parent->right_child = replacement_node;
-      }
+      } 
+    } else {
+      root = replacement_node;
     }
     if(!node->is_red) {
       fix_color = true;
@@ -172,7 +174,9 @@ bool redblack_tree::delete_node(uint8_t value) {
 	node->parent->left_child  = replacement_node;
       } else {
 	node->parent->right_child = replacement_node;
-      }
+      } 
+    } else {
+      root = replacement_node;
     }
     // Update replacement_node
     if(replacement_node != nullptr) {
@@ -190,6 +194,8 @@ bool redblack_tree::delete_node(uint8_t value) {
       } else {
 	node->parent->right_child = replacement_node;
       }
+    } else {
+      root = replacement_node;
     }
     // Update replacement_node
     if(replacement_node != nullptr) {
@@ -222,7 +228,7 @@ bool redblack_tree::delete_node(uint8_t value) {
 }
 
 void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
-  if(node == root) {
+  if(node == root || node == nullptr) {
     return;
   }
   bool is_left_child = 0;
@@ -465,7 +471,9 @@ int main() {
       rb_tree.print_tree();
     }
     if (input == "DEL") {
-      rb_tree.delete_node(value);
+      if(!rb_tree.delete_node(value)) {
+	cout << "Node does not exist in tree. Failed to delete." << endl;
+      }
       rb_tree.print_tree();
     }
 
