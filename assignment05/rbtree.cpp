@@ -62,7 +62,7 @@ class redblack_tree {
     return nullptr;
   }
 
-  //TODO fix rotate functions over root node
+  // TODO fix rotate functions over root node
   void counter_clockwise_rotate(
       shared_ptr<tree_node> little_node) {  // parent_node
     shared_ptr<tree_node> large_node = little_node->right_child;
@@ -115,183 +115,203 @@ class redblack_tree {
     large_node->parent = little_node;
 
     return;
-}
+  }
   void delete_node_fixcolor(shared_ptr<tree_node> node);
-public: 
-    shared_ptr<tree_node> root = nullptr; 
-    redblack_tree(vector<uint8_t> values);
-    bool insert_node(uint8_t value);
-    void print_tree(void);
-    bool delete_node(uint8_t value); 
-    int black_height(shared_ptr<tree_node> node); 
-    int black_height(uint8_t value); 
+
+ public:
+  shared_ptr<tree_node> root = nullptr;
+  redblack_tree(vector<uint8_t> values);
+  bool insert_node(uint8_t value);
+  void print_tree(void);
+  bool delete_node(uint8_t value);
+  int black_height(shared_ptr<tree_node> node);
+  int black_height(uint8_t value);
 };
 
 bool redblack_tree::delete_node(uint8_t value) {
   // Why do we have to implement this
-  
+
   auto node = find(value);
 
   // Case: Empty tree
-  if(node == nullptr) {
+  if (node == nullptr) {
     return false;
   }
 
   bool fix_color = false;
-  
+
   // Case: 2+ element tree
   bool is_left_child = 0;
-  if(node == root || node->value < node->parent->value) {
-    is_left_child = 1; // left-child
+  if (node == root || node->value < node->parent->value) {
+    is_left_child = 1;  // left-child
   } else {
-    is_left_child = 0; // right-child
+    is_left_child = 0;  // right-child
   }
 
   // Determine replacement node
   shared_ptr<tree_node> replacement_node = nullptr;
   // No children
-  if(node->left_child == nullptr && node->right_child == nullptr) {
+  if (node->left_child == nullptr && node->right_child == nullptr) {
     replacement_node = nullptr;
     // Update parent
-    if(node != root) {
-      if(is_left_child) {
-	node->parent->left_child  = replacement_node;
+    if (node != root) {
+      if (is_left_child) {
+        node->parent->left_child = replacement_node;
       } else {
-	node->parent->right_child = replacement_node;
-      } 
-    } else {
-      root = replacement_node;
-    }
-    if(!node->is_red) {
-      fix_color = true;
-    }
-  // only right child 
-  } else if(node->left_child == nullptr) {
-    replacement_node = node->right_child;
-    // Update parent
-    if(node != root) {
-      if(is_left_child) {
-	node->parent->left_child  = replacement_node;
-      } else {
-	node->parent->right_child = replacement_node;
-      } 
-    } else {
-      root = replacement_node;
-    }
-    // Update replacement_node
-    if(replacement_node != nullptr) {
-      replacement_node->parent = node->parent;
-      replacement_node->is_red = false;
-      fix_color = false;
-    }
-  // only left child 
-  } else if(node->right_child == nullptr) {
-    replacement_node = node->left_child;
-    // Update parent
-    if(node != root) {
-      if(is_left_child) {
-	node->parent->left_child  = replacement_node;
-      } else {
-	node->parent->right_child = replacement_node;
+        node->parent->right_child = replacement_node;
       }
     } else {
       root = replacement_node;
     }
-    // Update replacement_node
-    if(replacement_node != nullptr) {
+    if (!node->is_red) {
+      fix_color = true;
+    }
+    // only right child
+  } else if (node->left_child == nullptr) {
+    replacement_node = node->right_child;
+    // Update parent
+    if (node != root) {
+      if (is_left_child) {
+        node->parent->left_child = replacement_node;
+      } else {
+        node->parent->right_child = replacement_node;
+      }
+    } else {
+      root = replacement_node;
+    }
+    // Update replacement_node. due to the nature of rb_tree, node must be black
+    // and the child must be red
+    if (replacement_node != nullptr) {
       replacement_node->parent = node->parent;
       replacement_node->is_red = false;
       fix_color = false;
     }
-  // both children
+    // only left child
+  } else if (node->right_child == nullptr) {
+    replacement_node = node->left_child;
+    // Update parent
+    if (node != root) {
+      if (is_left_child) {
+        node->parent->left_child = replacement_node;
+      } else {
+        node->parent->right_child = replacement_node;
+      }
+    } else {
+      root = replacement_node;
+    }
+    // Update replacement_node. due to the nature of rb_tree, node must be black
+    // and the child must be red
+    if (replacement_node != nullptr) {
+      replacement_node->parent = node->parent;
+      replacement_node->is_red = false;
+      fix_color = false;
+    }
+    // both children
   } else {
     // Get in-order successor to node
     replacement_node = node->right_child;
-    while(replacement_node->left_child != nullptr) {
+    while (replacement_node->left_child != nullptr) {
       replacement_node = replacement_node->left_child;
     }
 
     // Recursively remove replacement node
     delete_node(replacement_node->value);
-    
+
     // Update node
     node->value = replacement_node->value;
     node = replacement_node;
-    fix_color = false; // should be fixed in recursive case
+    fix_color = false;  // should be fixed in recursive case
   }
 
   // If we removed a black node, we need to fix things
-  if(fix_color) {
+  if (fix_color) {
     delete_node_fixcolor(node);
   }
   return true;
 }
 
 void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
-  if(node == root || node == nullptr) {
+  if (node == root || node == nullptr) {
     return;
   }
+
+  auto parent = node->parent;
+
   bool is_left_child = 0;
-  if(node == root || node->value < node->parent->value) {
-    is_left_child = 1; // left-child
+  if (node == root || node->value < node->parent->value) {
+    is_left_child = 1;  // left-child
   } else {
-    is_left_child = 0; // right-child
+    is_left_child = 0;  // right-child
   }
+
+  // Fix node if it got cut out of actual tree
+  node = is_left_child ? parent->left_child : parent->right_child;
+
   shared_ptr<tree_node> sibling = nullptr;
-  if(!is_left_child) { // Sibling is right-child
-    sibling = node->parent->right_child;
-    if(sibling == nullptr) { // No sibling
-      delete_node_fixcolor(node->parent);
-    } else if(sibling->is_red) { // Red right sibling
-      node->parent->is_red = true;
+  if (is_left_child) {  // Sibling is right-child
+    sibling = parent->right_child;
+    if (sibling == nullptr) {  // No sibling
+      delete_node_fixcolor(parent);
+    } else if (sibling->is_red) {  // Red right sibling
+      parent->is_red = true;
       sibling->is_red = false;
-      counter_clockwise_rotate(node->parent);
+      counter_clockwise_rotate(parent);
       delete_node_fixcolor(node);
-    } else { // Sibling black
-      if(sibling->right_child->is_red) { // R-R case
-	sibling->right_child->is_red = sibling->is_red;
-	sibling->is_red = node->parent->is_red;
-	counter_clockwise_rotate(sibling);
-      } else if(sibling->left_child->is_red) { // R-L case
-	sibling->left_child->is_red = node->parent->is_red;
-	clockwise_rotate(sibling); 
-	counter_clockwise_rotate(node->parent);
+    } else {  // Sibling black
+      // Check if sibling has any red children
+      if (sibling->left_child != nullptr && sibling->left_child->is_red ||
+          sibling->right_child != nullptr && sibling->right_child->is_red) {
+        if (sibling->right_child != nullptr && sibling->right_child->is_red) {  // R-R case
+          sibling->right_child->is_red = false;
+          sibling->is_red = parent->is_red;
+          counter_clockwise_rotate(parent);
+        } else if (sibling->left_child->is_red) {  // R-L case
+          sibling->left_child->is_red = parent->is_red;
+          clockwise_rotate(sibling);
+          counter_clockwise_rotate(parent);
+        }
+        parent->is_red = false;
+        return;
       }
-      node->parent->is_red = false;
     }
-  } else { // Sibling is left child
-    sibling = node->parent->left_child;
-    if(sibling == nullptr) { // No sibling
-      delete_node_fixcolor(node->parent);
-    } else if(sibling->is_red) { // Red left sibling
-      node->parent->is_red = true;
+  } else {  // Sibling is left child
+    sibling = parent->left_child;
+    if (sibling == nullptr) {  // No sibling
+      delete_node_fixcolor(parent);
+    } else if (sibling->is_red) {  // Red left sibling
+      parent->is_red = true;
       sibling->is_red = false;
-      clockwise_rotate(node->parent);
+      clockwise_rotate(parent);
       delete_node_fixcolor(node);
-    } else { // Sibling black
-      if(sibling->left_child->is_red) { // L-L case
-	sibling->left_child->is_red = sibling->is_red;
-	sibling->is_red = node->parent->is_red;
-	clockwise_rotate(node->parent);
-      } else if(sibling->right_child->is_red) { // L-R case
-	sibling->right_child->is_red = node->parent->is_red;
-	counter_clockwise_rotate(sibling);
-	clockwise_rotate(node->parent);
+    } else {  // Sibling black
+      // Check if sibling has any red children
+      if (sibling->left_child != nullptr && sibling->left_child->is_red ||
+          sibling->right_child != nullptr && sibling->right_child->is_red) {
+        if (sibling->left_child != nullptr && sibling->left_child->is_red) {  // L-L case
+          sibling->left_child->is_red = sibling->is_red;
+          sibling->is_red = parent->is_red;
+          clockwise_rotate(parent);
+        } else if (sibling->right_child->is_red) {  // L-R case
+          sibling->right_child->is_red = parent->is_red;
+          counter_clockwise_rotate(sibling);
+          clockwise_rotate(parent);
+        }
+        parent->is_red = false;
+        return;
       }
-      node->parent->is_red = false;
     }
   }
-  if(sibling != nullptr && sibling->left_child != nullptr
-     && sibling->right_child != nullptr &&
-     !sibling->left_child->is_red && !sibling->right_child->is_red) {
+  // If sibling has two black children
+  if (sibling != nullptr && sibling->left_child != nullptr &&
+      sibling->right_child != nullptr && !sibling->left_child->is_red &&
+      !sibling->right_child->is_red) {
     sibling->is_red = true;
-    if(!node->parent->is_red) {
-      delete_node_fixcolor(node->parent);
+    if (!parent->is_red) {
+      delete_node_fixcolor(parent);
     } else {
-      node->parent->is_red = false;
+      parent->is_red = false;
     }
   }
-  
 }
 
 redblack_tree::redblack_tree(vector<uint8_t> values) {
@@ -463,7 +483,7 @@ int main() {
       break;
     }
     cout << "Your value: \n";
-    string value_input; 
+    string value_input;
     cin >> value_input;
     uint8_t value = stoi(value_input);
     if (input == "ADD") {
@@ -471,8 +491,8 @@ int main() {
       rb_tree.print_tree();
     }
     if (input == "DEL") {
-      if(!rb_tree.delete_node(value)) {
-	cout << "Node does not exist in tree. Failed to delete." << endl;
+      if (!rb_tree.delete_node(value)) {
+        cout << "Node does not exist in tree. Failed to delete." << endl;
       }
       rb_tree.print_tree();
     }
@@ -480,7 +500,6 @@ int main() {
     if (input == "BLKH") {
       cout << "The result is " << rb_tree.black_height(value) << ". " << endl;
     }
-
   }
 
   return 0;
