@@ -111,18 +111,174 @@ void clockwise_rotate(shared_ptr<tree_node> large_node) {
 
     return;
 }
-
+  void delete_node_fixcolor(shared_ptr<tree_node> node);
 public: 
     shared_ptr<tree_node> root = nullptr; 
     redblack_tree(vector<uint8_t> values);
     bool insert_node(uint8_t value);
     void print_tree(void);
-    void delete_node(uint8_t value); 
+    bool delete_node(uint8_t value); 
     int black_height(shared_ptr<tree_node> node); 
     int black_height(uint8_t value); 
     shared_ptr<tree_node> find(uint8_t value); 
 };
 
+
+bool redblack_tree::delete_node(uint8_t value) {
+  // Why do we have to implement this
+  
+  auto node = get_node(value);
+
+  // Case: Empty tree
+  if(node == nullptr) {
+    return false;
+  }
+
+  // Case: 1 element tree
+  if(node == root) {
+    if(node->value == value) {
+      root = nullptr;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool fix_color = false;
+  
+  // Case: 2+ element tree
+  bool is_left_child = 0;
+  if(node == root || node->value < node->parent->value) {
+    is_left_child = 1; // left-child
+  } else {
+    is_left_child = 0; // right-child
+  }
+
+  // Determine replacement node
+  shared_ptr<tree_node> replacement_node = nullptr;
+  // No children
+  if(node->left_child == nullptr && node->right_child == nullptr) {
+    replacement_node = nullptr;
+    if(!node->is_red) {
+      fix_color = true;
+    }
+  // only right child 
+  } else if(node->left_child == nullptr) {
+    replacement_node = node->right_child;
+    // Update parent
+    if(node != root) {
+      if(is_left_child) {
+	node->parent->left_child  = replacement_node;
+      } else {
+	node->parent->right_child = replacement_node;
+      }
+    }
+    // Update replacement_node
+    if(replacement_node != nullptr) {
+      replacement_node->parent = node->parent;
+      replacement_node->is_red = false;
+      fix_color = false;
+    }
+  // only left child 
+  } else if(node->right_child == nullptr) {
+    replacement_node = node->left_child;
+    // Update parent
+    if(node != root) {
+      if(is_left_child) {
+	node->parent->left_child  = replacement_node;
+      } else {
+	node->parent->right_child = replacement_node;
+      }
+    }
+    // Update replacement_node
+    if(replacement_node != nullptr) {
+      replacement_node->parent = node->parent;
+      replacement_node->is_red = false;
+      fix_color = false;
+    }
+  // both children
+  } else {
+    // Get in-order successor to node
+    replacement_node = node->right_child;
+    while(replacement_node->left_child != nullptr) {
+      replacement_node = replacement_node->left_child;
+    }
+
+    // Recursively remove replacement node
+    delete_node(replacement_node->value);
+    
+    // Update node
+    node->value = replacement_node->value;
+    node = replacement_node;
+    fix_color = false; // should be fixed in recursive case
+  }
+
+  // If we removed a black node, we need to fix things
+  if(fix_color) {
+    delete_node_fixcolor(node);
+  }
+  return true;
+}
+
+void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
+  bool is_left_child = 0;
+  if(node == root || node->value < node->parent->value) {
+    is_left_child = 1; // left-child
+  } else {
+    is_left_child = 0; // right-child
+  }
+    shared_ptr<tree_node> sibling = nullptr;
+    if(!is_left_child) { // Sibling is right-child
+      sibling = node->parent->right_child;
+      if(sibling == nullptr) { // No sibling
+	delete_node_fixcolor(node->parent);
+      } else if(sibling->is_red) { // Red right sibling
+	node->parent->is_red = true;
+	sibling->is_red = false;
+	counter_clockwise_rotate(node->parent);
+	delete_node_fixcolor(node);
+      } else { // Sibling black
+	if(sibling->right_child->is_red) { // R-R case
+	  sibling->right_child->is_red = sibling->is_red;
+	  sibling->is_red = node->parent->is_red;
+	  counter_clockwise_rotate(sibling);
+	} else if(sibling->left_child->is_red) { // R-L case
+	  sibling->left_child->is_red = node->parent->is_red;
+	  clockwise_rotate(sibling); 
+	  counter_clockwise_rotate(node->parent);
+	}
+	node->parent->is_red = false;
+      }
+    } else { // Sibling is left child
+      sibling = node->parent->left_child;
+      if(sibling->is_red) { // Red left sibling
+	node->parent->is_red = true;
+	sibling->is_red = false;
+	clockwise_rotate(node->parent);
+	delete_node_fixcolor(node);
+      } else { // Sibling black
+	if(sibling->left_child->is_red) { // L-L case
+	  sibling->left_child->is_red = sibling->is_red;
+	  sibling->is_red = node->parent->is_red;
+	  clockwise_rotate(node->parent);
+	} else if(sibling->right_child->is_red) { // L-R case
+	  sibling->right_child->is_red = node->parent->is_red;
+	  counter_clockwise_rotate(sibling);
+	  clockwise_rotate(node->parent);
+	}
+	node->parent->is_red = false;
+      }
+    }
+    if(!sibling->left_child->is_red && !sibling->right_child->is_red) {
+      sibling->is_red = true;
+      if(!node->parent->is_red) {
+	delete_node_fixcolor(node->parent);
+      } else {
+	node->parent->is_red = false;
+      }
+    }
+  
+}
 
 redblack_tree::redblack_tree(vector<uint8_t> values) {
     for(auto val : values) {
@@ -201,7 +357,9 @@ int redblack_tree::black_height(uint8_t value) {
     return -1;
   } else {
     auto node = get_node(value);
-    int count = -1;
+    
+    // Overcounts by one in the beginning, but undercounts at the end, so this is fine
+    int count = 0; 
     while(node->left_child != nullptr && node->right_child != nullptr) {
       if(!node->is_red) {
 	count++;
@@ -215,7 +373,6 @@ int redblack_tree::black_height(uint8_t value) {
     return count;
   }
 }
-
 
 int main() {
   return 0;
