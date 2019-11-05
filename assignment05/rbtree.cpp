@@ -259,9 +259,10 @@ void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
       delete_node_fixcolor(node);
     } else {  // Sibling black
       // Check if sibling has any red children
-      if (sibling->left_child != nullptr && sibling->left_child->is_red ||
-          sibling->right_child != nullptr && sibling->right_child->is_red) {
-        if (sibling->right_child != nullptr && sibling->right_child->is_red) {  // R-R case
+      if ((sibling->left_child != nullptr && sibling->left_child->is_red) ||
+          (sibling->right_child != nullptr && sibling->right_child->is_red)) {
+        if (sibling->right_child != nullptr &&
+            sibling->right_child->is_red) {  // R-R case
           sibling->right_child->is_red = false;
           sibling->is_red = parent->is_red;
           counter_clockwise_rotate(parent);
@@ -285,9 +286,10 @@ void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
       delete_node_fixcolor(node);
     } else {  // Sibling black
       // Check if sibling has any red children
-      if (sibling->left_child != nullptr && sibling->left_child->is_red ||
-          sibling->right_child != nullptr && sibling->right_child->is_red) {
-        if (sibling->left_child != nullptr && sibling->left_child->is_red) {  // L-L case
+      if ((sibling->left_child != nullptr && sibling->left_child->is_red) ||
+          (sibling->right_child != nullptr && sibling->right_child->is_red)) {
+        if (sibling->left_child != nullptr &&
+            sibling->left_child->is_red) {  // L-L case
           sibling->left_child->is_red = sibling->is_red;
           sibling->is_red = parent->is_red;
           clockwise_rotate(parent);
@@ -482,7 +484,6 @@ int main() {
     if (input == "EXIT") {
       break;
     }
-    cout << "Your value: \n";
     string value_input;
     cin >> value_input;
     uint8_t value = stoi(value_input);
@@ -498,7 +499,10 @@ int main() {
     }
 
     if (input == "BLKH") {
-      cout << "The result is " << rb_tree.black_height(value) << ". " << endl;
+      int result = rb_tree.black_height(value);
+      if (result != -1) {
+        cout << "The result is " << result << ". " << endl;
+      }
     }
   }
 

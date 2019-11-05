@@ -50,7 +50,7 @@ Gets the black height of a given key. This consists of finding the node in the t
 ### Execute:
 `./rbtree`
 
-The program `rbtree` is interactive. Users can add, delete, or query the black height of a given node. These are done using the following commands, respectively:
+The program `rbtree` is interactive. Users can add, delete, or query the black height of a given node. These are done using the following commands, respectively:  
 `ADD <value>`  
 `DEL <value>`  
 `BLKH <value>`
