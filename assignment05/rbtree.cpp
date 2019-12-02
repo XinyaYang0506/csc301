@@ -140,6 +140,10 @@ bool redblack_tree::delete_node(uint8_t value) {
 
   bool fix_color = false;
 
+  if(node->parent == nullptr) {
+    root = node;
+  }
+    
   // Case: 2+ element tree
   bool is_left_child = 0;
   if (node == root || node->value < node->parent->value) {
@@ -231,7 +235,7 @@ bool redblack_tree::delete_node(uint8_t value) {
 }
 
 void redblack_tree::delete_node_fixcolor(shared_ptr<tree_node> node) {
-  if (node == root || node == nullptr) {
+  if (node == root || node == nullptr || node->parent == nullptr) {
     return;
   }
 
@@ -486,6 +490,7 @@ int main() {
     }
     string value_input;
     cin >> value_input;
+    try {
     uint8_t value = stoi(value_input);
     if (input == "ADD") {
       rb_tree.insert_node(value);
@@ -503,6 +508,9 @@ int main() {
       if (result != -1) {
         cout << "The result is " << result << ". " << endl;
       }
+    }
+    } catch(std::invalid_argument c) {
+      // pass
     }
   }
 
