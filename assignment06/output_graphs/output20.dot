@@ -1,0 +1,13 @@
+digraph g{
+ rankdir = LR
+4 -> 5 [label = " 51/51 "];
+4 -> 7 [label = " 12/98 "];
+5 -> 3 [label = " 72/87 "];
+6 -> 3 [label = " 47/47 "];
+6 -> 7 [label = " 25/85 "];
+7 -> 3 [label = " 37/82 "];
+8 -> 6 [label = " 72/72 "];
+8 -> 5 [label = " 21/21 "];
+8 -> 4 [label = " 63/63 "];
+label = "graph 20: maximum flow = 156, s = 8, t = 3"
+}
