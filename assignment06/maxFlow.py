@@ -1,4 +1,3 @@
-#%%
 from random import seed
 from random import randint
 import networkx as nx
@@ -6,51 +5,47 @@ import matplotlib.pyplot as plt
 
 from networkx.drawing.nx_pydot import write_dot 
 
-# def flow_network_generator():
-G = nx.MultiDiGraph(directed = True); 
-num_Nodes = randint(5, 15); #magic number 
+def flow_network_generator(i):
+    filename = "input" + str(i) + ".dot"
+    f= open(filename, "w+")
+    f.write("digraph g{\n rankdir = LR\n")
+    G = nx.MultiDiGraph(directed = True); 
+    num_Nodes = randint(5, 15); #magic number 
 
-for node in range(num_Nodes):
-    G.add_node(node + 1); #one-base
+    for node in range(num_Nodes):
+        G.add_node(node + 1); #one-base
+        f.write("%d;\n" % (node + 1))
 
-num_Edges = randint(num_Nodes - 1, num_Nodes * (num_Nodes - 1)/2); 
-f= open("test.dot", "w+")
-f.write("digraph g{\n rankdir = LR\n")
+    num_Edges = randint(num_Nodes - 1, num_Nodes * (num_Nodes - 1)/2); 
 
-#%%
-# generate some edge
-for _ in range(num_Edges):
-    from_Node = 0
-    to_Node = 0
-    while (from_Node == 0 or G.has_edge(from_Node, to_Node)):
-        from_Node = randint(1, num_Nodes); 
-        to_Node = from_Node; 
-        while to_Node == from_Node:
-            to_Node = randint(1, num_Nodes); 
+    # generate some edge
+    for _ in range(num_Edges):
+        from_Node = 0
+        to_Node = 0
+        while (from_Node == 0 or G.has_edge(from_Node, to_Node)):
+            from_Node = randint(1, num_Nodes); 
+            to_Node = from_Node; 
+            while to_Node == from_Node:
+                to_Node = randint(1, num_Nodes); 
 
-    edge_weight = randint(1, 100); #magic number
+        edge_weight = randint(1, 100); #magic number
 
-    G.add_edge(from_Node, to_Node, capacity = edge_weight, flow = 0)
-    G.add_edge(to_Node, from_Node, capacity = 0, flow = 0)
-    f.write("%d -> %d [label = \" %d \"];\n" % (from_Node , to_Node , edge_weight))
-f.write("}\n")
-f.close()
-#%%
-# options = {
-#     'node_color': 'red',
-#     'node_size': 1000,
-#     'width': 3,
-#     'arrowstyle': '-|>',
-#     'arrowsize': 12,
-# }
-# nx.draw_networkx(G, arrows=True, **options)
-#     return G
-# def max_flow_generator(G, s, t):
-#%%
+        G.add_edge(from_Node, to_Node, capacity = edge_weight, flow = 0)
+        G.add_edge(to_Node, from_Node, capacity = 0, flow = 0)
+        f.write("%d -> %d [label = \" %d \"];\n" % (from_Node , to_Node , edge_weight))
+    
+    f.write("label = \"graph %d\"\n" % (i))
+    f.write("}\n")
+    f.close()
+
+    return G
+
+def max_flow_generator(G, i):
+    num_Nodes = G.number_of_nodes()
     s = 1 #magic 
     t = 2 #magic
-    flow = 0
-#%%
+    max_flow = 0
+
     while True:
         # an iteration
         queue = [s] 
@@ -76,9 +71,27 @@ f.close()
                 G[node][pred[node]][0]['flow'] -= add_flow
                 node = pred[node]
             
-            flow += add_flow
+            max_flow += add_flow
         else: 
             break
-        # return G
+    
+    filename = "output" + str(i) + ".dot"
+    f= open(filename, "w+")
+    f.write("digraph g{\n rankdir = LR\n")
+    for edge in list(G.edges): 
+        capacity = G[edge[0]][edge[1]][0]['capacity']
+        if capacity != 0:
+            flow = G[edge[0]][edge[1]][0]['flow']
+            if flow != 0:
+                f.write("%d -> %d [label = \" %d/%d \"];\n" % (edge[0] , edge[1] , flow, capacity))
+    f.write("label = \"graph %2d: maximum flow = %d\"\n" % (i, max_flow))
+    f.write("}\n")
+    f.close()
 
-# %%
+def main():
+  for i in range(10): 
+      G = flow_network_generator(i+1)
+      max_flow_generator(G, i+1)
+
+if __name__ == "__main__":
+    main()
