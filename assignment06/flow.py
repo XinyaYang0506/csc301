@@ -1,7 +1,7 @@
 from random import seed
 from random import randint
 import networkx as nx
-
+import os
 from networkx.drawing.nx_pydot import write_dot
 
 
@@ -10,8 +10,9 @@ class flow:
     # i is the number for dot file
     @staticmethod
     def flow_network_generator(i):
-        filename = "input/input" + str(i) + ".dot"
-        f = open(filename, "w+")
+        filename = "input/input" + str(i)
+        dot_filename = filename + ".dot"
+        f = open(dot_filename, "w+")
         f.write("digraph g{\n rankdir = LR\n")
         G = nx.MultiDiGraph(directed=True)
 
@@ -44,7 +45,8 @@ class flow:
         f.write('label = "graph %d"\n' % (i))
         f.write("}\n")
         f.close()
-
+        command = "dot -Tpng " + filename + ".dot -o " + filename + ".png"
+        os.system(command)
         return G
 
     # This function will select s, the source node and t, the sink node almost randomly.
