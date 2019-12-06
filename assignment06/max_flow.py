@@ -5,46 +5,10 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot 
 class max_flow:
     @staticmethod
-    def max_flow_generator(G, i):
-        num_Nodes = G.number_of_nodes()
-        s = randint(1, num_Nodes)
-        print("!" + str(s))
-        counter = 0
-        for to_Node in list(G[s]):
-            capacity = G[s][to_Node][0]['capacity']
-            print(str(to_Node) + " " + str(capacity))
-            if capacity > 0: 
-                counter += 1
-        print("coutner" + str(counter))
-        while (counter == 0): 
-            s = randint(1, num_Nodes)
-            print("@" + str(s))
-            for to_Node in list(G[s]):
-                capacity = G[s][to_Node][0]['capacity']
-                print(str(to_Node) + " " + str(capacity))
-                if capacity > 0: 
-                    counter += 1
-            print("coutner" + str(counter))
-
-        t = s
-        print(" lalala")
-        while True:
-            print(t)
-            if t != s and randint(1, 2) == 1:
-                break
-            else:
-                found = False
-                for to_Node in list(G[t]): #[0] is still general a random one in the list
-                    capacity = G[t][to_Node][0]['capacity']
-                    print(str(to_Node) + " " + str(capacity))
-                    if (capacity > 0): 
-                        t = to_Node
-                        found = True
-                        break
-                if not found:
-                    break
+    def max_flow_generator(G, i, s, t):
         max_flow = 0
-
+        num_Nodes = G.number_of_nodes()
+        
         while True:
             queue = [s] 
             pred = [-1]*(num_Nodes + 1) #value - index is a edge

@@ -39,3 +39,34 @@ class flow:
         f.close()
 
         return G
+    @staticmethod
+    def select_nodes(G):
+        num_Nodes = G.number_of_nodes()
+        s = randint(1, num_Nodes)
+        counter = 0
+        for to_Node in list(G[s]):
+            capacity = G[s][to_Node][0]['capacity']
+            if capacity > 0: 
+                counter += 1
+        while (counter == 0): 
+            s = randint(1, num_Nodes)
+            for to_Node in list(G[s]):
+                capacity = G[s][to_Node][0]['capacity']
+                if capacity > 0: 
+                    counter += 1
+
+        t = s
+        while True:
+            if t != s and randint(1, 2) == 1:
+                break
+            else:
+                found = False
+                for to_Node in list(G[t]): #[0] is still general a random one in the list
+                    capacity = G[t][to_Node][0]['capacity']
+                    if (capacity > 0): 
+                        t = to_Node
+                        found = True
+                        break
+                if not found:
+                    break
+        return (s, t)
