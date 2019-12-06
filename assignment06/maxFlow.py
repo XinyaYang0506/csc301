@@ -42,8 +42,17 @@ def flow_network_generator(i):
 
 def max_flow_generator(G, i):
     num_Nodes = G.number_of_nodes()
-    s = 1 #magic 
-    t = 2 #magic
+    s = randint(1, num_Nodes)
+    while (G.out_degree(s) == 0): 
+        s = randint(1, num_Nodes)
+
+    t = s
+    while True:
+        if t != s and (G.out_degree(t) == 0 or randint(1, 2) == 1):
+            break
+        else:
+            t = list(G[t])[0] #[0] is still general a random one in the list
+
     max_flow = 0
 
     while True:
@@ -84,7 +93,7 @@ def max_flow_generator(G, i):
             flow = G[edge[0]][edge[1]][0]['flow']
             if flow != 0:
                 f.write("%d -> %d [label = \" %d/%d \"];\n" % (edge[0] , edge[1] , flow, capacity))
-    f.write("label = \"graph %2d: maximum flow = %d\"\n" % (i, max_flow))
+    f.write("label = \"graph %2d: maximum flow = %d, s = %d, t = %d\"\n" % (i, max_flow, s, t))
     f.write("}\n")
     f.close()
 
