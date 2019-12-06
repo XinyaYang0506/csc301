@@ -1,0 +1,15 @@
+digraph g{
+ rankdir = LR
+1;
+2;
+3;
+4;
+5;
+2 -> 1 [label = " 56 "];
+4 -> 5 [label = " 15 "];
+1 -> 4 [label = " 31 "];
+2 -> 3 [label = " 62 "];
+5 -> 3 [label = " 25 "];
+5 -> 2 [label = " 18 "];
+label = "graph 1"
+}

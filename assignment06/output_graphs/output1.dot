@@ -1,0 +1,5 @@
+digraph g{
+ rankdir = LR
+2 -> 1 [label = " 56/56 "];
+label = "graph  1: maximum flow = 56, s = 2, t = 1"
+}
