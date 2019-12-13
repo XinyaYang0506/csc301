@@ -48,7 +48,7 @@ def build_fa(pattern, alphabet):
         for a in alphabet:
             k = min(len(alphabet), q+1)
             while(not(pattern[1:q] + a).endswith(pattern[1:k])):
-                prep_cost += 1
+                prep_cost += len(pattern[1:k])
                 k -= 1
             fa[(q,a)] = k
     return fa, prep_cost
