@@ -17,11 +17,11 @@ def naive_str_match(pattern, text):
         if valid:
             indexes.append(i)
         valid = True
-    return indexes, 0, num_shifts, num_comparisons
+    return {'indexes' : indexes, 'prep_cost' : 0, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
 MATCH = -1
 
-def dfa_str_match(pattern, text):
+def fa_str_match(pattern, text):
     indexes = []
     num_shifts = 0
     num_comparisons = 0
@@ -44,7 +44,7 @@ def dfa_str_match(pattern, text):
         if q == MATCH: 
             indexes.append(i-len(pattern)+1)
 
-    return indexes, prep_cost, num_shifts, num_comparisons
+    return {'indexes' : indexes, 'prep_cost' : prep_cost, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
 def build_trans(pattern, alphabet):
     prep_cost = 0
@@ -100,7 +100,6 @@ def KMP_preprocess(pattern):
                 j = j + 1
             i = jump_table[i - 1]
             
-    print('jump_table: ' + str(jump_table))
     return jump_table, preprocess_cost
 
 def KMP_str_match(pattern, text):
@@ -131,11 +130,5 @@ def KMP_str_match(pattern, text):
      
     if p == l_pattern:
         indexes.append(i - l_pattern)
-    return indexes, preprocess_cost, num_shifts, num_comparisons
+    return {'indexes' : indexes, 'prep_cost' : preprocess_cost, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
-def main():
-    print("KMP" + str(KMP_str_match("abababaaa","abababaaaaaababababaaaabababababaaaabbbbbbaabababababbbbababa")))
-    print("Naive" + str(naive_str_match("abababaaa","abababaaaaaababababaaaabababababaaaabbbbbbaabababababbbbababa")))
-    print("trans_table" + str(dfa_str_match("abababaaa","abababaaaaaababababaaaabababababaaaabbbbbbaabababababbbbababa")))
-
-main()
