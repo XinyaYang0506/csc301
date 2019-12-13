@@ -1,0 +1,5 @@
+ex
+fish
+sar
+ass
+dec

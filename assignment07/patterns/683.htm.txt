@@ -1,0 +1,5 @@
+day
+gulf
+land
+water
+share
