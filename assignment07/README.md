@@ -1,6 +1,8 @@
 # Pattern Matching
 ## Problem Description
-Pattern matching is a very important question in computer science. 
-2. Instruction to execute your code
-3. Some sample input and corresponding output
-4. Discussion of your experience on this assignmen
+Pattern matching is a very important question in computer science. A classic/essential type of this question is to find a specific substring (pattern) in a long text and record where the instances are found. In this assignment, we implemented three pattern matching algorithm: naive approach, DFA based approach, and KMP approach.   
+## Get started
+   
+## Some sample input & output
+
+## Discussion
