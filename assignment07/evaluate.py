@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 import os
+import pandas as pd
 
 string_matching = __import__("string-matching")
 
@@ -37,8 +38,9 @@ for k in text_data:
 
 os.makedirs('results', exist_ok = True)
 
-with open('./results/data.csv', 'w') as f:
+with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv', 'w') as f1: 
     f.write("file algorithm indexes pattern num_shifts num_comparisons prep_cost\n")
+    f1.write("file algorithm pattern num_shifts num_comparisons prep_cost\n")
     for i in range(5):
         for fname in naive_data:
             algorithm   = "naive"
@@ -48,6 +50,7 @@ with open('./results/data.csv', 'w') as f:
             num_shifts  = naive_data[fname][i][1]['num_shifts']
             num_comparisons = naive_data[fname][i][1]['num_comparisons']
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
         for fname in fa_data:
             algorithm   = "finite_automata"
             pattern     = fa_data[fname][i][0]
@@ -56,6 +59,7 @@ with open('./results/data.csv', 'w') as f:
             num_shifts  = fa_data[fname][i][1]['num_shifts']
             num_comparisons = fa_data[fname][i][1]['num_comparisons']
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
         for fname in kmp_data:
             algorithm   = "KMP"
             pattern     = kmp_data[fname][i][0]
@@ -64,7 +68,14 @@ with open('./results/data.csv', 'w') as f:
             num_shifts  = kmp_data[fname][i][1]['num_shifts']
             num_comparisons = kmp_data[fname][i][1]['num_comparisons']
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
 
+print("Raw data stored to results/data.csv. Summary statistics stored to results/summary.csv")
 
+raw = pd.read_csv('results/data_no_indices.csv', delimiter = ' ')
+print(raw.groupby('algorithm').describe())
 
+raw.to_html('results/data_no_indices.html')
 
+with open('results/summary.csv', 'w') as f:
+    f.write(str(raw.groupby('algorithm').mean()))
