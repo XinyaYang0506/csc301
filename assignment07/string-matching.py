@@ -6,8 +6,7 @@ def naive_str_match(pattern, text):
     num_comparisons = 0
     valid = True
     # Loop over possible indexes
-    for i in range(len(text)-len(pattern)):
-        num_shifts += 1
+    for i in range(len(text) - len(pattern) + 1):
         # Check validity of current shift
         for j in range(len(pattern)):
             num_shifts += 1 
@@ -32,7 +31,7 @@ def fa_str_match(pattern, text):
     q = 0 # Set state to start state
 
     # Pass text through our DFA
-    for i in range(len(text)): #why?
+    for i in range(len(text)): 
         num_shifts += 1
         try:
             num_comparisons += 1

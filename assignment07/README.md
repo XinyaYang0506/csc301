@@ -1,18 +1,18 @@
 Ben Gafford, Xinya Yang
 # Pattern Matching
-Ben Gafford, Xinya Yang
 ## Problem Description
 Pattern matching is a very important question in computer science. A classic/essential type of this question is to find a specific substring (pattern) in a long text and record where the instances are found. In this assignment, we implemented three pattern matching algorithm: naive approach, DFA based approach, and KMP approach. The algorithms are implemented in a case insensitive way.   
 
 ## Get started
 - If you want to pass in text and pattern as arguments
-```python3 string-matching.py "<text>" "<pattern>"```  
-- If you want to generate the result with the provided corpus and patterns
-```python3 evaluate.py```  
-This stores results in a `results` directory as follows:
-* Generates an html version of the data table
-* Generates a csv version of the data table (one with indices and one without)
-* Generates summary statistics for the data. 
+    ```python3 string-matching.py "<text>" "<pattern>"```  
+- If you want to generate the result with the provided corpus and patterns  
+    ```pip3 install pandas``` for library dependency   
+    ```python3 evaluate.py```  
+    This stores results in a `results` directory as follows:
+    * Generates an html version of the data table
+    * Generates a csv version of the data table (one with indices and one without)
+    * Generates summary statistics for the data to the terminal.   
 
 ## Some sample input & output
 - ```python3 string-matching.py "abc abc" "a"```
@@ -22,8 +22,8 @@ pattern is: a
 Result of Naive approach  
 found in indexes: [0, 4]  
 preprocess cost: 0  
-number of shifts: 12  
-number of comparisons: 6  
+number of shifts: 7
+number of comparisons: 7  
 
 Result of DFA approach  
 found in indexes: [0, 4]  
@@ -66,8 +66,8 @@ pattern is: abababaaa
 Result of Naive approach
 found in indexes: [4, 77]
 preprocess cost: 0
-number of shifts: 270
-number of comparisons: 191
+number of shifts: 197
+number of comparisons: 197
 
 Result of DFA approach
 found in indexes: [4, 77]
