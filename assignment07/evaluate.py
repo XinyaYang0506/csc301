@@ -28,10 +28,12 @@ kmp_data   = {}
 for k in text_data:
     patterns = pattern_data[k]
     text = text_data[k]
+    text = text.lower()
     naive_data[k] = []
     fa_data   [k] = []
     kmp_data  [k] = []
     for pattern in patterns:
+        pattern = pattern.lower()
         naive_data[k].append((pattern, string_matching.naive_str_match(pattern, text)))
         fa_data   [k].append((pattern, string_matching.fa_str_match(pattern, text)))
         kmp_data  [k].append((pattern, string_matching.KMP_str_match(pattern, text)))
@@ -72,12 +74,12 @@ with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv',
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
             f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
 
-print("Raw data stored to results/data.csv. Summary statistics stored to results/summary.csv")
-
+print("Raw data stored to results/data.csv. Summary statistics stored to results/means.csv")
+pd.set_option('display.max_columns', None)  
 raw = pd.read_csv('results/data_no_indices.csv', delimiter = ' ')
 print(raw.groupby('algorithm').describe())
 
 raw.to_html('results/data_no_indices.html')
 
-with open('results/summary.csv', 'w') as f:
+with open('results/means.csv', 'w') as f:
     f.write(str(raw.groupby('algorithm').mean()))
