@@ -38,7 +38,7 @@ for k in text_data:
 os.makedirs('results', exist_ok = True)
 
 with open('./results/data.csv', 'w') as f:
-    f.write("file algorithm indexes pattern num_shifts num_comparisons prep_cost\n")
+    f.write("file, algorithm, indexes, pattern, num_shifts, num_comparisons, prep_cost\n")
     for i in range(5):
         for fname in naive_data:
             algorithm   = "naive"
@@ -47,7 +47,7 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = naive_data[fname][i][1]['prep_cost']
             num_shifts  = naive_data[fname][i][1]['num_shifts']
             num_comparisons = naive_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f.write(f'{fname}, {algorithm}, "{indexes}", {pattern}, {num_shifts}, {num_comparisons}, {prep_cost}\n')
         for fname in fa_data:
             algorithm   = "finite_automata"
             pattern     = fa_data[fname][i][0]
@@ -55,7 +55,7 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = fa_data[fname][i][1]['prep_cost']
             num_shifts  = fa_data[fname][i][1]['num_shifts']
             num_comparisons = fa_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f.write(f'{fname}, {algorithm}, "{indexes}", "{pattern}", {num_shifts}, {num_comparisons}, {prep_cost}\n')
         for fname in kmp_data:
             algorithm   = "KMP"
             pattern     = kmp_data[fname][i][0]
@@ -63,7 +63,7 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = kmp_data[fname][i][1]['prep_cost']
             num_shifts  = kmp_data[fname][i][1]['num_shifts']
             num_comparisons = kmp_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f.write(f'{fname}, {algorithm}, "{indexes}", "{pattern}", {num_shifts}, {num_comparisons}, {prep_cost}\n')
 
 
 

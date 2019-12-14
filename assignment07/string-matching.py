@@ -1,4 +1,4 @@
-
+import sys
 def naive_str_match(pattern, text):
     indexes = []
     num_shifts = 0
@@ -81,11 +81,11 @@ def KMP_preprocess(pattern):
     preprocess_cost = 0
     l = len(pattern)
     if l == 0:
-        return jump_table
+        return jump_table, preprocess_cost
     jump_table.append(0)
     preprocess_cost += 1
     if l == 1:
-        return jump_table
+        return jump_table, preprocess_cost
     i = 0
     j = 1
     while j < l:
@@ -132,3 +132,35 @@ def KMP_str_match(pattern, text):
         indexes.append(i - l_pattern)
     return {'indexes' : indexes, 'prep_cost' : preprocess_cost, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
+def pattern_matching():
+    if (len(sys.argv) != 3):
+        print("Invalid usage. " + sys.argv[0] + "<text> <pattern>")
+        exit()
+
+    text = sys.argv[1]
+    pattern = sys.argv[2]
+    print("text is: " + str(text))
+    print("pattern is: " + str(pattern))
+    print("\nResult of Naive approach")
+    result = naive_str_match(pattern, text)
+    print("found in indexes: " + str(result['indexes']))
+    print("preprocess cost: " + str(result['prep_cost']))
+    print("number of shifts: " + str(result['num_shifts']))
+    print("number of comparisons: " + str(result['num_comparisons']))
+
+    print("\nResult of DFA approach")
+    result = fa_str_match(pattern, text)
+    print("found in indexes: " + str(result['indexes']))
+    print("preprocess cost: " + str(result['prep_cost']))
+    print("number of shifts: " + str(result['num_shifts']))
+    print("number of comparisons: " + str(result['num_comparisons']))
+
+    print("\nResult of KMP approach")
+    result = KMP_str_match(pattern, text)
+    print("found in indexes: " + str(result['indexes']))
+    print("preprocess cost: " + str(result['prep_cost']))
+    print("number of shifts: " + str(result['num_shifts']))
+    print("number of comparisons: " + str(result['num_comparisons']))
+
+if __name__ == "__main__":
+    pattern_matching()
