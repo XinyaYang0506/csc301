@@ -1,4 +1,5 @@
 import sys
+#naive approach
 def naive_str_match(pattern, text):
     indexes = []
     num_shifts = 0
@@ -9,7 +10,7 @@ def naive_str_match(pattern, text):
         num_shifts += 1
         # Check validity of current shift
         for j in range(len(pattern)):
-            num_shifts += 1 #this counts as shift too?
+            num_shifts += 1 
             num_comparisons += 1
             if(text[j+i] != pattern[j]):
                 valid = False
@@ -19,8 +20,7 @@ def naive_str_match(pattern, text):
         valid = True
     return {'indexes' : indexes, 'prep_cost' : 0, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
-MATCH = -1
-
+#finite automata approach
 def fa_str_match(pattern, text):
     indexes = []
     num_shifts = 0
@@ -46,26 +46,28 @@ def fa_str_match(pattern, text):
 
     return {'indexes' : indexes, 'prep_cost' : prep_cost, 'num_shifts' : num_shifts, 'num_comparisons' : num_comparisons}
 
+# calculate the transition function tables
 def build_trans(pattern, alphabet):
     prep_cost = 0
     trans_table = {}
     # print("Alphabet: " + str(alphabet))
-    for q in range(len(pattern) + 1):
+    for q in range(len(pattern) + 1): #cur state
         for a in alphabet:
             q_next, prep_cost = get_next_state(pattern, q, a, prep_cost)
             trans_table[(q,a)] = q_next
     return trans_table, prep_cost
 
+# find the output of the transition function
 def get_next_state(pattern, q, a, prep_cost):
-    if (q < len(pattern) and a == pattern[q]):
+    if (q < len(pattern) and a == pattern[q]): # the ideal next state
         return q + 1, prep_cost + 1
     q_next = q
-    while q_next > 0: 
+    while q_next > 0: #start from the largest possible state
         prep_cost += 1
         if pattern[q_next - 1] == a: 
             prep_cost += 1
             i = 0
-            while i < (q_next - 1): # check the rest
+            while i < (q_next - 1): # check the rest of the pattern-ix
                 prep_cost += 1
                 if (pattern[i] != pattern[q - q_next + i + 1]): 
                     break
@@ -76,6 +78,7 @@ def get_next_state(pattern, q, a, prep_cost):
         q_next -= 1
     return 0, prep_cost
 
+# generate the table containing the "effort saving" index to check
 def KMP_preprocess(pattern):
     jump_table = []
     preprocess_cost = 0
@@ -98,10 +101,11 @@ def KMP_preprocess(pattern):
             if i == 0:
                 jump_table.append(0)
                 j = j + 1
-            i = jump_table[i - 1]
+            i = jump_table[i - 1] #keep jumping back until the other conditions are hited
             
     return jump_table, preprocess_cost
 
+#KMP approach
 def KMP_str_match(pattern, text):
     indexes = []
     num_shifts = 0
@@ -112,7 +116,7 @@ def KMP_str_match(pattern, text):
     p = 0
     i = 0
     while i < l_text: # always start with new ptrs, but have not check yet
-        if p == l_pattern:
+        if p == l_pattern: #found it
             indexes.append(i - l_pattern)
             p = jump_table[p - 1]
         else: 
