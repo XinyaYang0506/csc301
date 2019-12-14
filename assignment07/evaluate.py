@@ -40,6 +40,8 @@ for k in text_data:
 
 os.makedirs('results', exist_ok = True)
 
+# Write everything out in csv format, 2 different files (with and without indices)
+# Indices excluded from one file because they mess up some csv parsers
 with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv', 'w') as f1: 
     f.write("file algorithm indexes pattern num_shifts num_comparisons prep_cost\n")
     f1.write("file algorithm pattern num_shifts num_comparisons prep_cost\n")
@@ -75,11 +77,19 @@ with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv',
             f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
 
 print("Raw data stored to results/data.csv. Summary statistics stored to results/means.csv")
-pd.set_option('display.max_columns', None)  
+
+# Prevent truncation of summary statistics
+pd.set_option('display.max_columns', None)
+
+# Parse csv
 raw = pd.read_csv('results/data_no_indices.csv', delimiter = ' ')
+
+# Print the summary statistics grouped by algorithm
 print(raw.groupby('algorithm').describe())
 
+# Store HTML version of data table
 raw.to_html('results/data_no_indices.html')
 
+# Store means
 with open('results/means.csv', 'w') as f:
     f.write(str(raw.groupby('algorithm').mean()))
