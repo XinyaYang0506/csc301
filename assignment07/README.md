@@ -1,11 +1,13 @@
 # Pattern Matching
 ## Problem Description
 Pattern matching is a very important question in computer science. A classic/essential type of this question is to find a specific substring (pattern) in a long text and record where the instances are found. In this assignment, we implemented three pattern matching algorithm: naive approach, DFA based approach, and KMP approach.   
+
 ## Get started
 - If you want to pass in text and pattern as arguments
 ```python3 string-matching.py "<text>" "<pattern>"```  
 - If you want to generate the result with the provided corpus and patterns
 ```python3 evaluate.py```  
+
 ## Some sample input & output
 - ```python3 string-matching.py "abc abc" "a"```
 text is: abc abc  
@@ -73,3 +75,4 @@ preprocess cost: 13
 number of shifts: 88
 number of comparisons: 116
 ## Discussion
+The experience was good, it was interesting to investigate these algorithms using empirical methods. It's also interesting to notice how empirical methods can fall short in certain analyses if there is not sufficient background knowledge in the area. For example, if we only used small patterns, then we might not have collected data that reflected the preprocessing costs in the KMP vs automata string matching algorithms. 
