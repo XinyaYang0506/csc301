@@ -49,6 +49,7 @@ with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv',
             prep_cost   = naive_data[fname][i][1]['prep_cost']
             num_shifts  = naive_data[fname][i][1]['num_shifts']
             num_comparisons = naive_data[fname][i][1]['num_comparisons']
+
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
             f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
         for fname in fa_data:
@@ -67,6 +68,7 @@ with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv',
             prep_cost   = kmp_data[fname][i][1]['prep_cost']
             num_shifts  = kmp_data[fname][i][1]['num_shifts']
             num_comparisons = kmp_data[fname][i][1]['num_comparisons']
+
             f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
             f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
 
