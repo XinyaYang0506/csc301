@@ -1,3 +1,4 @@
+Ben Gafford, Xinya Yang
 # Pattern Matching
 Ben Gafford, Xinya Yang
 ## Problem Description
@@ -8,6 +9,10 @@ Pattern matching is a very important question in computer science. A classic/ess
 ```python3 string-matching.py "<text>" "<pattern>"```  
 - If you want to generate the result with the provided corpus and patterns
 ```python3 evaluate.py```  
+This stores results in a `results` directory as follows:
+* Generates an html version of the data table
+* Generates a csv version of the data table (one with indices and one without)
+* Generates summary statistics for the data. 
 
 ## Some sample input & output
 - ```python3 string-matching.py "abc abc" "a"```

@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 import os
+import pandas as pd
 
 string_matching = __import__("string-matching")
 
@@ -27,18 +28,23 @@ kmp_data   = {}
 for k in text_data:
     patterns = pattern_data[k]
     text = text_data[k]
+    text = text.lower()
     naive_data[k] = []
     fa_data   [k] = []
     kmp_data  [k] = []
     for pattern in patterns:
+        pattern = pattern.lower()
         naive_data[k].append((pattern, string_matching.naive_str_match(pattern, text)))
         fa_data   [k].append((pattern, string_matching.fa_str_match(pattern, text)))
         kmp_data  [k].append((pattern, string_matching.KMP_str_match(pattern, text)))
 
 os.makedirs('results', exist_ok = True)
 
-with open('./results/data.csv', 'w') as f:
-    f.write("file, algorithm, indexes, pattern, num_shifts, num_comparisons, prep_cost\n")
+# Write everything out in csv format, 2 different files (with and without indices)
+# Indices excluded from one file because they mess up some csv parsers
+with open('./results/data.csv', 'w') as f, open('./results/data_no_indices.csv', 'w') as f1: 
+    f.write("file algorithm indexes pattern num_shifts num_comparisons prep_cost\n")
+    f1.write("file algorithm pattern num_shifts num_comparisons prep_cost\n")
     for i in range(5):
         for fname in naive_data:
             algorithm   = "naive"
@@ -47,7 +53,9 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = naive_data[fname][i][1]['prep_cost']
             num_shifts  = naive_data[fname][i][1]['num_shifts']
             num_comparisons = naive_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname}, {algorithm}, "{indexes}", {pattern}, {num_shifts}, {num_comparisons}, {prep_cost}\n')
+
+            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
         for fname in fa_data:
             algorithm   = "finite_automata"
             pattern     = fa_data[fname][i][0]
@@ -55,7 +63,8 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = fa_data[fname][i][1]['prep_cost']
             num_shifts  = fa_data[fname][i][1]['num_shifts']
             num_comparisons = fa_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname}, {algorithm}, "{indexes}", "{pattern}", {num_shifts}, {num_comparisons}, {prep_cost}\n')
+            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
         for fname in kmp_data:
             algorithm   = "KMP"
             pattern     = kmp_data[fname][i][0]
@@ -63,8 +72,24 @@ with open('./results/data.csv', 'w') as f:
             prep_cost   = kmp_data[fname][i][1]['prep_cost']
             num_shifts  = kmp_data[fname][i][1]['num_shifts']
             num_comparisons = kmp_data[fname][i][1]['num_comparisons']
-            f.write(f'{fname}, {algorithm}, "{indexes}", "{pattern}", {num_shifts}, {num_comparisons}, {prep_cost}\n')
 
+            f.write(f'{fname} {algorithm} {indexes} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
+            f1.write(f'{fname} {algorithm} {pattern} {num_shifts} {num_comparisons} {prep_cost}\n')
 
+print("Raw data stored to results/data.csv. Summary statistics stored to results/means.csv")
 
+# Prevent truncation of summary statistics
+pd.set_option('display.max_columns', None)
 
+# Parse csv
+raw = pd.read_csv('results/data_no_indices.csv', delimiter = ' ')
+
+# Print the summary statistics grouped by algorithm
+print(raw.groupby('algorithm').describe())
+
+# Store HTML version of data table
+raw.to_html('results/data_no_indices.html')
+
+# Store means
+with open('results/means.csv', 'w') as f:
+    f.write(str(raw.groupby('algorithm').mean()))

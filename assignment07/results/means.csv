@@ -1,0 +1,5 @@
+                 num_shifts  num_comparisons  prep_cost
+algorithm                                              
+KMP                 7978.45          8344.99       4.39
+finite_automata     7978.45          7978.45     108.18
+naive              16355.73          8381.64       0.00
